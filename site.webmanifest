@@ -1,0 +1,18 @@
+{
+  "name": "Estolas para Eventos",
+  "short_name": "Estolas",
+  "description": "Alta peletería artesanal sostenible para bodas, galas y eventos. Marca De La Roca, Madrid.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#f4ece1",
+  "theme_color": "#241c14",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

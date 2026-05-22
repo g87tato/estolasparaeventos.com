@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#241c14"/>
+  <line x1="10" y1="10" x2="54" y2="10" stroke="#a9763f" stroke-width="1.5"/>
+  <line x1="10" y1="54" x2="54" y2="54" stroke="#a9763f" stroke-width="1.5"/>
+  <text
+    x="32" y="46"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="38"
+    font-style="italic"
+    font-weight="400"
+    fill="#c79a5f"
+    text-anchor="middle"
+    dominant-baseline="auto"
+    letter-spacing="-1"
+  >E</text>
+</svg>
