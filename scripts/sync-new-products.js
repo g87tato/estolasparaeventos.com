@@ -97,45 +97,24 @@ async function getProductUrlsFromSitemap() {
   return [];
 }
 
-// ── Extraer precio limpio del HTML WooCommerce ───────────────────────────────
+// ── Extraer precio limpio del HTML WooCommerce (delaroca.es) ─────────────────
+// Formato real en la página: <bdi>1.500,00<span ...>&euro;</span></bdi>
+// Dentro de <del> = precio original, dentro de <ins> = precio oferta
 function extractPrecio(html) {
-  // Intentar primero JSON-LD de schema.org (más fiable)
-  const ldMatch = html.match(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi);
-  if (ldMatch) {
-    for (const block of ldMatch) {
-      try {
-        const json = JSON.parse(block.replace(/<\/?script[^>]*>/gi, ''));
-        const offers = json.offers || (Array.isArray(json['@graph']) &&
-          json['@graph'].find(n => n['@type'] === 'Product')?.offers);
-        if (offers) {
-          const precio = parseFloat(offers.price || offers.lowPrice);
-          const high   = parseFloat(offers.highPrice);
-          if (!isNaN(precio)) {
-            return {
-              precio: formatEur(isNaN(high) ? precio : Math.min(precio, high)),
-              antes:  (!isNaN(high) && high > precio) ? formatEur(high) : null,
-            };
-          }
-        }
-      } catch {}
-    }
-  }
+  const block = html.match(/class="price"[\s\S]{0,1000}?<\/p>/);
+  if (!block) return { precio: null, antes: null };
+  const seg = block[0];
 
-  // Fallback: HTML WooCommerce <del> y <ins> dentro de .price
-  const priceBlock = html.match(/class="price"[^>]*>([\s\S]{0,400}?)<\/span>\s*<\/span>/);
-  if (priceBlock) {
-    const amounts = [...priceBlock[1].matchAll(/[\d.,]+(?=\s*&nbsp;<span class="woocommerce-Price-currencySymbol">)/g)]
-      .map(m => m[0].replace(/\./g, '').replace(',', '.'))
-      .map(parseFloat)
-      .filter(n => !isNaN(n));
-    if (amounts.length === 2) return { precio: formatEur(Math.min(...amounts)), antes: formatEur(Math.max(...amounts)) };
-    if (amounts.length === 1) return { precio: formatEur(amounts[0]), antes: null };
-  }
-  return { precio: null, antes: null };
-}
+  // Extrae todos los importes que aparecen en <bdi>
+  const precios = [...seg.matchAll(/<bdi>([\d.,]+)<span[^>]*>(?:&euro;|€|&#8364;)<\/span><\/bdi>/gi)]
+    .map(m => m[1] + '€');
 
-function formatEur(num) {
-  return num.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '€';
+  if (precios.length === 0) return { precio: null, antes: null };
+
+  // Si hay <del> Y <ins> es oferta: primero = original, segundo = precio actual
+  const esOferta = seg.includes('<del') && seg.includes('<ins');
+  if (esOferta && precios.length >= 2) return { precio: precios[1], antes: precios[0] };
+  return { precio: precios[0], antes: null };
 }
 
 // ── Extraer og:image ─────────────────────────────────────────────────────────
