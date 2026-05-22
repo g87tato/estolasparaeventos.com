@@ -162,7 +162,23 @@ footer a:hover{color:var(--oro);}
 .footer-legal{border-top:1px solid #d3c4ad;padding-top:1.5rem;text-align:center;font-size:.78rem;line-height:1.8;}
 
 .hero p em{color:var(--oro-claro);font-style:normal;font-weight:400;}
-@media(max-width:760px){.nav-links{display:none;}.hero{min-height:78vh;}}
+/* ── Hamburguesa ── */
+.hamburguesa{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;z-index:200;}
+.hamburguesa span{display:block;width:24px;height:2px;background:var(--marron);transition:all .3s;}
+.hamburguesa.abierto span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburguesa.abierto span:nth-child(2){opacity:0;}
+.hamburguesa.abierto span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.menu-movil{display:none;position:fixed;inset:0;background:var(--crema);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:2.2rem;}
+.menu-movil.abierto{display:flex;}
+.menu-movil a{font-family:var(--display);font-size:2rem;font-weight:500;color:var(--marron);letter-spacing:.04em;transition:color .3s;}
+.menu-movil a:hover{color:var(--oro);}
+.menu-movil .separador-menu{width:40px;height:1px;background:var(--arena);}
+@media(max-width:760px){
+  .nav-links{display:none;}
+  .hamburguesa{display:flex;}
+  .hero{min-height:78vh;}
+  .grid{grid-template-columns:repeat(2,1fr);gap:1.2rem;}
+}
 
 /* ── Cookie Banner ── */
 #cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:999;background:var(--negro);color:var(--crema);padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;box-shadow:0 -4px 24px rgba(0,0,0,.3);}
@@ -189,6 +205,9 @@ footer a:hover{color:var(--oro);}
       <li><a href="#contacto">Contacto</a></li>
       <li><a href="https://www.delaroca.es" target="_blank" rel="noopener">De La Roca</a></li>
     </ul></nav>
+    <button class="hamburguesa" id="hamburguesa" aria-label="Abrir men&uacute;">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
 
@@ -1378,6 +1397,33 @@ function cargarGA(){
   window.gtag = gtag;
   gtag('js', new Date());
   gtag('config', GA_ID);
+}
+</script>
+
+<!-- Menú móvil -->
+<div class="menu-movil" id="menu-movil">
+  <a href="#coleccion" onclick="cerrarMenu()">Colecci&oacute;n</a>
+  <div class="separador-menu"></div>
+  <a href="#confianza" onclick="cerrarMenu()">Calidad</a>
+  <div class="separador-menu"></div>
+  <a href="blog.html">Blog</a>
+  <div class="separador-menu"></div>
+  <a href="#contacto" onclick="cerrarMenu()">Contacto</a>
+  <div class="separador-menu"></div>
+  <a href="https://www.delaroca.es" target="_blank" rel="noopener">De La Roca &rarr;</a>
+</div>
+<script>
+const btn = document.getElementById('hamburguesa');
+const menu = document.getElementById('menu-movil');
+btn.addEventListener('click', () => {
+  const abierto = menu.classList.toggle('abierto');
+  btn.classList.toggle('abierto', abierto);
+  document.body.style.overflow = abierto ? 'hidden' : '';
+});
+function cerrarMenu(){
+  menu.classList.remove('abierto');
+  btn.classList.remove('abierto');
+  document.body.style.overflow = '';
 }
 </script>
 

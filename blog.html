@@ -97,7 +97,17 @@ footer a:hover{color:var(--oro);}
 /* Loading */
 .cargando{text-align:center;padding:4rem 0;color:var(--gris);font-size:.9rem;letter-spacing:.1em;text-transform:uppercase;}
 
-@media(max-width:760px){.nav-links{display:none;}}
+.hamburguesa{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;z-index:200;}
+.hamburguesa span{display:block;width:24px;height:2px;background:var(--marron);transition:all .3s;}
+.hamburguesa.abierto span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburguesa.abierto span:nth-child(2){opacity:0;}
+.hamburguesa.abierto span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.menu-movil{display:none;position:fixed;inset:0;background:var(--crema);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:2.2rem;}
+.menu-movil.abierto{display:flex;}
+.menu-movil a{font-family:var(--display);font-size:2rem;font-weight:500;color:var(--marron);letter-spacing:.04em;transition:color .3s;}
+.menu-movil a:hover{color:var(--oro);}
+.menu-movil .separador-menu{width:40px;height:1px;background:var(--arena);}
+@media(max-width:760px){.nav-links{display:none;}.hamburguesa{display:flex;}}
 </style>
 </head>
 <body>
@@ -114,6 +124,9 @@ footer a:hover{color:var(--oro);}
       <li><a href="/#contacto">Contacto</a></li>
       <li><a href="https://www.delaroca.es" target="_blank" rel="noopener">De La Roca</a></li>
     </ul></nav>
+    <button class="hamburguesa" id="hamburguesa" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
 
@@ -126,6 +139,26 @@ footer a:hover{color:var(--oro);}
 </section>
 
 <!-- Lista de posts -->
+<!-- Menú móvil -->
+<div class="menu-movil" id="menu-movil">
+  <a href="/">Catálogo</a>
+  <div class="separador-menu"></div>
+  <a href="blog.html">Blog</a>
+  <div class="separador-menu"></div>
+  <a href="/#contacto">Contacto</a>
+  <div class="separador-menu"></div>
+  <a href="https://www.delaroca.es" target="_blank" rel="noopener">De La Roca &rarr;</a>
+</div>
+<script>
+const btn=document.getElementById('hamburguesa');
+const menu=document.getElementById('menu-movil');
+btn.addEventListener('click',()=>{
+  const a=menu.classList.toggle('abierto');
+  btn.classList.toggle('abierto',a);
+  document.body.style.overflow=a?'hidden':'';
+});
+</script>
+
 <div id="blog-lista">
   <div class="contenedor">
     <div class="blog-filtros" id="filtros-blog"></div>
