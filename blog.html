@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog de Moda y Eventos | Estolas para Eventos – De La Roca</title>
+<meta name="description" content="Consejos de moda, tendencias nupciales, cuidado de la peletería artesanal y novedades del sector. El blog de Estolas para Eventos y De La Roca.">
+<meta name="robots" content="index, follow">
+<meta name="author" content="DE LA ROCA PELETEROS, S.L.">
+<link rel="canonical" href="https://estolasparaeventos.com/blog.html">
+<meta property="og:title" content="Blog de Moda y Eventos | Estolas para Eventos">
+<meta property="og:description" content="Tendencias nupciales, consejos de peletería artesanal y moda para eventos. De La Roca, Madrid.">
+<meta property="og:type" content="blog">
+<meta property="og:url" content="https://estolasparaeventos.com/blog.html">
+<meta property="og:image" content="https://www.delaroca.es/wp-content/uploads/2025/10/250066-1.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--negro:#241c14;--marron:#5c3d24;--marron-claro:#8a6442;--crema:#f4ece1;--crema-osc:#e7dac8;--arena:#cbb295;--oro:#a9763f;--oro-claro:#c79a5f;--gris:#7a6a58;--blanco:#fbf7f1;--sombra:0 20px 45px -20px rgba(36,28,20,.4);--display:'Cormorant Garamond',Georgia,serif;--texto:'Jost',system-ui,sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--texto);color:var(--negro);background:var(--crema);line-height:1.65;font-weight:300;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+.contenedor{width:90%;max-width:1280px;margin:0 auto;}
+.aviso-top{background:var(--negro);color:var(--crema);text-align:center;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;padding:.7rem 1rem;font-weight:400;}
+header{position:sticky;top:0;z-index:50;background:rgba(244,236,225,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--crema-osc);}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 0;}
+.logo{font-family:var(--display);font-size:1.75rem;font-weight:600;letter-spacing:.04em;line-height:1;color:var(--marron);}
+.logo span{color:var(--oro);font-style:italic;}
+.logo small{display:block;font-family:var(--texto);font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gris);margin-top:.35rem;font-weight:400;}
+.nav-links{display:flex;gap:2rem;list-style:none;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;}
+.nav-links a{position:relative;padding-bottom:3px;transition:color .3s;}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--oro);transition:width .3s;}
+.nav-links a:hover,.nav-links a.activo{color:var(--oro);}
+.nav-links a:hover::after,.nav-links a.activo::after{width:100%;}
+
+/* Blog hero */
+.blog-hero{background:linear-gradient(135deg,var(--negro) 0%,var(--marron) 100%);color:var(--crema);padding:5rem 0 4rem;text-align:center;}
+.blog-hero .eyebrow{font-size:.72rem;letter-spacing:.4em;text-transform:uppercase;color:var(--oro-claro);margin-bottom:1.2rem;}
+.blog-hero h1{font-family:var(--display);font-size:clamp(2.2rem,5vw,4rem);font-weight:500;margin-bottom:1rem;}
+.blog-hero p{font-size:1rem;color:rgba(244,236,225,.78);max-width:560px;margin:0 auto;}
+
+/* Filtros */
+.blog-filtros{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;padding:2.5rem 0 1rem;}
+.blog-filtro{background:transparent;border:1px solid var(--arena);color:var(--marron);padding:.55rem 1.3rem;font-family:var(--texto);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .3s;border-radius:2px;}
+.blog-filtro:hover{border-color:var(--oro);color:var(--oro);}
+.blog-filtro.activo{background:var(--marron);border-color:var(--marron);color:var(--crema);}
+
+/* Grid de posts */
+.blog-grid-section{padding:1rem 0 5rem;}
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2.5rem 2rem;}
+.post-card{background:var(--blanco);border-radius:2px;overflow:hidden;display:flex;flex-direction:column;transition:transform .4s,box-shadow .4s;box-shadow:0 2px 12px rgba(36,28,20,.07);cursor:pointer;}
+.post-card:hover{transform:translateY(-5px);box-shadow:var(--sombra);}
+.post-card-img{height:200px;background:linear-gradient(135deg,var(--marron),var(--marron-claro));display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.post-card-img .icono{font-family:var(--display);font-size:3rem;color:rgba(244,236,225,.3);font-style:italic;}
+.post-card-body{padding:1.5rem 1.4rem 1.8rem;flex:1;display:flex;flex-direction:column;}
+.post-cat{font-size:.63rem;letter-spacing:.22em;text-transform:uppercase;color:var(--oro);margin-bottom:.5rem;}
+.post-titulo{font-family:var(--display);font-size:1.35rem;font-weight:500;line-height:1.25;color:var(--negro);margin-bottom:.8rem;}
+.post-resumen{font-size:.88rem;color:var(--gris);line-height:1.6;margin-bottom:1.2rem;flex:1;}
+.post-meta{display:flex;align-items:center;justify-content:space-between;margin-top:auto;}
+.post-fecha{font-size:.72rem;color:var(--arena);letter-spacing:.08em;}
+.post-leer{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--oro);font-weight:500;border-bottom:1px solid transparent;transition:border-color .3s;}
+.post-card:hover .post-leer{border-color:var(--oro);}
+
+/* Vista de post individual */
+#post-view{display:none;}
+.post-back{display:inline-flex;align-items:center;gap:.5rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gris);border:1px solid var(--arena);padding:.55rem 1.2rem;margin-bottom:2.5rem;transition:all .3s;cursor:pointer;}
+.post-back:hover{border-color:var(--oro);color:var(--oro);}
+.post-single{max-width:760px;margin:0 auto;padding:3.5rem 0 6rem;}
+.post-single .post-cat{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--oro);margin-bottom:.8rem;}
+.post-single h1{font-family:var(--display);font-size:clamp(1.9rem,4vw,3rem);font-weight:500;line-height:1.15;color:var(--marron);margin-bottom:1rem;}
+.post-single .post-fecha{font-size:.78rem;color:var(--arena);letter-spacing:.1em;padding-bottom:1.8rem;border-bottom:1px solid var(--crema-osc);margin-bottom:2rem;display:block;}
+.post-contenido p{font-size:1rem;color:#3a2e22;line-height:1.8;margin-bottom:1.4rem;}
+.post-contenido h2{font-family:var(--display);font-size:1.6rem;font-weight:600;color:var(--marron);margin:2.2rem 0 .9rem;}
+.post-contenido h3{font-size:1.05rem;font-weight:500;color:var(--negro);margin:1.5rem 0 .6rem;letter-spacing:.05em;}
+.post-contenido ul{padding-left:1.5rem;margin-bottom:1.2rem;}
+.post-contenido li{font-size:1rem;color:#3a2e22;line-height:1.8;margin-bottom:.4rem;}
+
+/* CTA */
+.blog-cta{background:var(--negro);color:var(--crema);text-align:center;padding:4rem 0;}
+.blog-cta h2{font-family:var(--display);font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:500;margin-bottom:1rem;}
+.blog-cta p{color:rgba(244,236,225,.75);margin-bottom:2rem;font-size:.95rem;}
+.btn{display:inline-block;background:var(--oro);color:var(--blanco);padding:1rem 2.4rem;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;font-weight:500;border:none;cursor:pointer;transition:background .3s,transform .3s;}
+.btn:hover{background:var(--marron-claro);transform:translateY(-2px);}
+
+footer{background:var(--crema-osc);padding:3.5rem 0 2rem;font-size:.85rem;color:var(--gris);}
+.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;margin-bottom:2.5rem;}
+footer h5{font-family:var(--display);font-size:1.2rem;color:var(--marron);margin-bottom:.9rem;font-weight:600;}
+footer a:hover{color:var(--oro);}
+.footer-legal{border-top:1px solid #d3c4ad;padding-top:1.5rem;text-align:center;font-size:.78rem;line-height:1.8;}
+
+/* Loading */
+.cargando{text-align:center;padding:4rem 0;color:var(--gris);font-size:.9rem;letter-spacing:.1em;text-transform:uppercase;}
+
+@media(max-width:760px){.nav-links{display:none;}}
+</style>
+</head>
+<body>
+
+<div class="aviso-top">Blog de moda &nbsp;&middot;&nbsp; Peletería artesanal &nbsp;&middot;&nbsp; Eventos y tendencias</div>
+
+<header>
+  <div class="contenedor nav">
+    <a href="/" class="logo">Estolas <span>para Eventos</span><small>Alta Peletería</small></a>
+    <nav><ul class="nav-links">
+      <li><a href="/#coleccion">Colección</a></li>
+      <li><a href="/#confianza">Calidad</a></li>
+      <li><a href="blog.html" class="activo">Blog</a></li>
+      <li><a href="/#contacto">Contacto</a></li>
+      <li><a href="https://www.delaroca.es" target="_blank" rel="noopener">De La Roca</a></li>
+    </ul></nav>
+  </div>
+</header>
+
+<section class="blog-hero">
+  <div class="contenedor">
+    <p class="eyebrow">Moda · Eventos · Peletería artesanal</p>
+    <h1>Blog de <em style="color:var(--oro-claro);">estilo y elegancia</em></h1>
+    <p>Consejos para tus eventos, tendencias nupciales, cuidado de la peletería artesanal y mucho más.</p>
+  </div>
+</section>
+
+<!-- Lista de posts -->
+<div id="blog-lista">
+  <div class="contenedor">
+    <div class="blog-filtros" id="filtros-blog"></div>
+  </div>
+  <section class="blog-grid-section contenedor">
+    <div class="blog-grid" id="grid-posts">
+      <div class="cargando">Cargando artículos...</div>
+    </div>
+  </section>
+</div>
+
+<!-- Post individual -->
+<div id="post-view">
+  <section class="contenedor post-single">
+    <button class="post-back" onclick="verLista()">← Volver al blog</button>
+    <p class="post-cat" id="sv-cat"></p>
+    <h1 id="sv-titulo"></h1>
+    <span class="post-fecha" id="sv-fecha"></span>
+    <div class="post-contenido" id="sv-contenido"></div>
+    <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--crema-osc);">
+      <button class="post-back" onclick="verLista()">← Volver al blog</button>
+    </div>
+  </section>
+</div>
+
+<section class="blog-cta">
+  <div class="contenedor">
+    <h2>Descubre nuestra colección</h2>
+    <p>133 piezas de alta peletería artesanal para bodas, galas y eventos especiales.</p>
+    <a href="/" class="btn">Ver catálogo completo</a>
+  </div>
+</section>
+
+<footer>
+  <div class="contenedor">
+    <div class="footer-grid">
+      <div><h5>Estolas para Eventos</h5><p>Blog y catálogo de alta peletería de la marca De La Roca. Artículos sobre moda, eventos y peletería artesanal sostenible.</p></div>
+      <div><h5>Navegar</h5><p><a href="/">Catálogo de productos</a></p><p><a href="blog.html">Blog</a></p><p><a href="https://www.delaroca.es" target="_blank" rel="noopener">Tienda oficial De La Roca</a></p></div>
+      <div><h5>De La Roca</h5><p>DE LA ROCA PELETEROS, S.L.</p><p>Calle Lope de Rueda, 20 (Local)</p><p>28009 Madrid, España</p><p><a href="https://www.delaroca.es/inicio#contacto" target="_blank" rel="noopener">Formulario de contacto</a></p></div>
+    </div>
+    <div class="footer-legal">
+      © <span id="anio"></span> DE LA ROCA PELETEROS, S.L. · NIF B81516031 · Calle Lope de Rueda, 20 Local, 28009 Madrid.<br>
+      <a href="aviso-legal.html">Aviso Legal</a> · <a href="politica-privacidad.html">Política de Privacidad y Cookies</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('anio').textContent = new Date().getFullYear();
+
+const CATEGORIAS = ['Todos','Moda','Eventos','Consejos','Tendencias','Historia'];
+let catActual = 'Todos';
+let posts = [];
+
+function formatFecha(iso){
+  const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const d = new Date(iso + 'T12:00:00');
+  return d.getDate() + ' de ' + meses[d.getMonth()] + ' de ' + d.getFullYear();
+}
+
+function renderFiltros(){
+  const cont = document.getElementById('filtros-blog');
+  CATEGORIAS.forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'blog-filtro' + (cat === catActual ? ' activo' : '');
+    b.textContent = cat;
+    b.onclick = () => {
+      catActual = cat;
+      document.querySelectorAll('.blog-filtro').forEach(x => x.classList.remove('activo'));
+      b.classList.add('activo');
+      renderGrid();
+    };
+    cont.appendChild(b);
+  });
+}
+
+function renderGrid(){
+  const grid = document.getElementById('grid-posts');
+  const lista = catActual === 'Todos' ? posts : posts.filter(p => p.categoria === catActual);
+  if(!lista.length){ grid.innerHTML = '<p style="color:var(--gris);padding:2rem 0;">No hay artículos en esta categoría aún.</p>'; return; }
+  grid.innerHTML = lista.map(p => `
+    <article class="post-card" onclick="verPost('${p.id}')">
+      <div class="post-card-img"><div class="icono">De La Roca</div></div>
+      <div class="post-card-body">
+        <div class="post-cat">${p.categoria}</div>
+        <h2 class="post-titulo">${p.titulo}</h2>
+        <p class="post-resumen">${p.resumen}</p>
+        <div class="post-meta">
+          <span class="post-fecha">${formatFecha(p.fecha)}</span>
+          <span class="post-leer">Leer artículo →</span>
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+
+function verPost(id){
+  const p = posts.find(x => x.id === id);
+  if(!p) return;
+  document.getElementById('sv-cat').textContent = p.categoria;
+  document.getElementById('sv-titulo').textContent = p.titulo;
+  document.getElementById('sv-fecha').textContent = formatFecha(p.fecha);
+  document.getElementById('sv-contenido').innerHTML = p.contenido;
+  document.getElementById('blog-lista').style.display = 'none';
+  document.getElementById('post-view').style.display = 'block';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  history.pushState({postId: id}, '', '#' + id);
+  document.title = p.titulo + ' | Blog Estolas para Eventos';
+}
+
+function verLista(){
+  document.getElementById('blog-lista').style.display = 'block';
+  document.getElementById('post-view').style.display = 'none';
+  history.pushState({}, '', 'blog.html');
+  document.title = 'Blog de Moda y Eventos | Estolas para Eventos – De La Roca';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+window.addEventListener('popstate', e => {
+  if(e.state && e.state.postId) verPost(e.state.postId);
+  else verLista();
+});
+
+fetch('posts.json')
+  .then(r => r.json())
+  .then(data => {
+    posts = data;
+    renderFiltros();
+    const hash = location.hash.replace('#','');
+    if(hash && posts.find(p => p.id === hash)) verPost(hash);
+    else renderGrid();
+  })
+  .catch(() => {
+    document.getElementById('grid-posts').innerHTML = '<p style="color:var(--gris);">No se pudieron cargar los artículos. Inténtalo de nuevo.</p>';
+  });
+</script>
+</body>
+</html>
