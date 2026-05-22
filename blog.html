@@ -175,6 +175,17 @@ footer a:hover{color:var(--oro);}
 
 <script>
 document.getElementById('anio').textContent = new Date().getFullYear();
+(function(){
+  const GA_ID = 'G-XB4NMN86N0';
+  if(localStorage.getItem('cookies_consent')==='aceptadas'){
+    const s=document.createElement('script');s.async=true;
+    s.src='https://www.googletagmanager.com/gtag/js?id='+GA_ID;
+    document.head.appendChild(s);
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js',new Date());gtag('config',GA_ID);
+  }
+})();
 
 const CATEGORIAS = ['Todos','Moda','Eventos','Consejos','Tendencias','Historia'];
 let catActual = 'Todos';

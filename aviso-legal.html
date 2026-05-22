@@ -100,5 +100,18 @@ footer a:hover{color:var(--oro);}
     <a href="/">Inicio</a> · <a href="aviso-legal.html">Aviso Legal</a> · <a href="politica-privacidad.html">Política de Privacidad y Cookies</a>
   </div>
 </footer>
+<script>
+(function(){
+  const GA_ID='G-XB4NMN86N0';
+  if(localStorage.getItem('cookies_consent')==='aceptadas'){
+    const s=document.createElement('script');s.async=true;
+    s.src='https://www.googletagmanager.com/gtag/js?id='+GA_ID;
+    document.head.appendChild(s);
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js',new Date());gtag('config',GA_ID);
+  }
+})();
+</script>
 </body>
 </html>
