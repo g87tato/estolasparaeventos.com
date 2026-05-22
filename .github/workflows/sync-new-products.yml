@@ -1,0 +1,51 @@
+name: Detectar y añadir productos nuevos
+
+on:
+  schedule:
+    # Todos los jueves a las 8:00 AM (complementa el check-stock del lunes)
+    - cron: '0 6 * * 4'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry-run: solo mostrar qué se añadiría sin modificar archivos'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+jobs:
+  sync-products:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Detectar productos nuevos en delaroca.es
+        run: |
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            node scripts/sync-new-products.js --dry-run
+          else
+            node scripts/sync-new-products.js
+          fi
+
+      - name: Commit y push si hay productos nuevos
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          git config user.name "Sync Bot – Estolas para Eventos"
+          git config user.email "bot@estolasparaeventos.com"
+          git add index.html scripts/stock-added.log 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "Sin productos nuevos esta semana."
+          else
+            NUEVOS=$(git diff --staged -- index.html | grep '^+.*"url"' | wc -l)
+            git commit -m "Catálogo: ${NUEVOS} producto(s) nuevo(s) desde delaroca.es $(date +'%Y-%m-%d')"
+            git push
+          fi
