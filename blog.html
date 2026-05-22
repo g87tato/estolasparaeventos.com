@@ -204,7 +204,9 @@ function renderFiltros(){
 
 function renderGrid(){
   const grid = document.getElementById('grid-posts');
-  const lista = catActual === 'Todos' ? posts : posts.filter(p => p.categoria === catActual);
+  const hoy = new Date().toISOString().split('T')[0];
+  const visibles = posts.filter(p => p.fecha <= hoy);
+  const lista = catActual === 'Todos' ? visibles : visibles.filter(p => p.categoria === catActual);
   if(!lista.length){ grid.innerHTML = '<p style="color:var(--gris);padding:2rem 0;">No hay artículos en esta categoría aún.</p>'; return; }
   grid.innerHTML = lista.map(p => `
     <article class="post-card" onclick="verPost('${p.id}')">
