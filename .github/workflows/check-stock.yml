@@ -1,0 +1,51 @@
+name: Comprobar stock del catálogo
+
+on:
+  schedule:
+    # Todos los lunes a las 8:00 AM (hora España en verano = UTC+2)
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry-run: solo mostrar qué se eliminaría sin tocar archivos'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+jobs:
+  check-stock:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Comprobar disponibilidad de productos
+        run: |
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            node scripts/check-stock.js --dry-run
+          else
+            node scripts/check-stock.js
+          fi
+
+      - name: Commit y push si hay cambios
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          git config user.name "Stock Bot – Estolas para Eventos"
+          git config user.email "bot@estolasparaeventos.com"
+          git add index.html scripts/stock-removed.log 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "Sin cambios en el catálogo esta semana."
+          else
+            ELIMINADOS=$(git diff --staged -- index.html | grep '^-.*"url"' | wc -l)
+            git commit -m "Catálogo: ${ELIMINADOS} producto(s) sin stock eliminado(s) $(date +'%Y-%m-%d')"
+            git push
+          fi
