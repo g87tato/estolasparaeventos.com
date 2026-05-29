@@ -132,17 +132,29 @@ function extractOgTitle(html) {
   return null;
 }
 
-// ── Detectar categoría desde migas de pan o título ───────────────────────────
+// Prendas de ropa completas que no son accesorios — aunque tengan "cuello" en el nombre
+const PRENDAS_EXCLUIR = ['chaqueta', 'abrigo', 'chaleco', 'cazadora', 'chaqueton', 'chaquetón', 'abrigos', 'chaquetas'];
+
+// ── Detectar categoría desde migas de pan ────────────────────────────────────
 function detectarCategoria(html, url) {
-  // 1) Migas de pan
-  const bc = html.match(/woocommerce-breadcrumb[^>]*>([\s\S]{0,300}?)<\/nav>/i)
-          || html.match(/breadcrumb[^>]*>([\s\S]{0,300}?)<\/[uo]l>/i);
-  const texto = ((bc ? bc[1] : '') + ' ' + url).toLowerCase();
+  const bc = html.match(/woocommerce-breadcrumb[^>]*>([\s\S]{0,500}?)<\/nav>/i)
+          || html.match(/breadcrumb[^>]*>([\s\S]{0,500}?)<\/[uo]l>/i);
+
+  if (!bc) return null;
+
+  // Buscar solo el texto de los LINKS del breadcrumb (= categorías).
+  // El nombre del producto aparece al final como texto plano sin <a>, así que queda excluido.
+  const links = [...bc[1].matchAll(/<a[^>]*>([^<]+)<\/a>/gi)].map(m => m[1].toLowerCase());
+  const textoCats = links.join(' ');
+
+  // Si la URL o los links del breadcrumb contienen una prenda completa, descartar
+  const urlLower = url.toLowerCase();
+  if (PRENDAS_EXCLUIR.some(p => urlLower.includes(p) || textoCats.includes(p))) return null;
 
   for (const { palabras, cat } of CAT_MAP) {
-    if (palabras.some(p => texto.includes(p))) return cat;
+    if (palabras.some(p => textoCats.includes(p))) return cat;
   }
-  return null; // desconocida: no añadir
+  return null; // categoría no mapeada: no añadir
 }
 
 // ── Leer / escribir index.html ───────────────────────────────────────────────
