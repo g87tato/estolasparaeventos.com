@@ -1,11 +1,12 @@
 /**
  * sync-new-products.js
- * Detecta productos nuevos en delaroca.es y los añade automáticamente a index.html.
+ * Detecta productos nuevos en la categoría "Accesorios" de delaroca.es
+ * y los añade automáticamente a index.html.
  *
  * Funcionamiento:
- *  1. Obtiene todas las URLs de productos del sitemap de delaroca.es
- *  2. Compara con el catálogo actual de index.html
- *  3. Para cada URL nueva, visita la página y extrae: nombre, precio, categoría e imagen
+ *  1. Recorre todas las páginas de /categoria-producto/accesorios/ en delaroca.es
+ *  2. Compara las URLs encontradas con el catálogo actual de index.html
+ *  3. Para cada URL nueva, visita la página y extrae: nombre, precio, subcategoría e imagen
  *  4. Añade los nuevos productos al array PRODUCTOS y al mapa IMAGENES de index.html
  *
  * Uso:
@@ -18,27 +19,22 @@ const https = require('https');
 const fs    = require('fs');
 const path  = require('path');
 
-const INDEX_FILE = path.join(__dirname, '..', 'index.html');
-const DELAY_MS   = 1500;
-const TIMEOUT_MS = 15000;
-const DRY_RUN    = process.argv.includes('--dry-run');
+const INDEX_FILE    = path.join(__dirname, '..', 'index.html');
+const CAT_ACCESORIOS = 'https://www.delaroca.es/categoria-producto/accesorios/';
+const DELAY_MS      = 1500;
+const TIMEOUT_MS    = 15000;
+const DRY_RUN       = process.argv.includes('--dry-run');
 
-// Categorías de delaroca.es → nombre que usamos en estolasparaeventos.com
-// El script busca estas palabras en las migas de pan (breadcrumb) de la página
+// Subcategorías de accesorios → nombre en estolasparaeventos.com
+// Se detectan por los links del breadcrumb de la página del producto
 const CAT_MAP = [
-  { palabras: ['estola'],               cat: 'Estolas' },
-  { palabras: ['bufanda'],              cat: 'Bufandas' },
-  { palabras: ['cuello'],               cat: 'Cuellos' },
-  { palabras: ['capa'],                 cat: 'Capas' },
-  { palabras: ['bolso', 'bolsa'],       cat: 'Bolsos' },
-  { palabras: ['sombrero', 'gorro'],    cat: 'Sombreros y gorros' },
-  { palabras: ['llavero'],              cat: 'Llaveros' },
-];
-
-// URLs candidatas del sitemap de delaroca.es
-const SITEMAP_URLS = [
-  'https://www.delaroca.es/product-sitemap.xml',
-  'https://www.delaroca.es/wp-sitemap-posts-product-1.xml',
+  { palabras: ['estola'],            cat: 'Estolas' },
+  { palabras: ['bufanda'],           cat: 'Bufandas' },
+  { palabras: ['cuello'],            cat: 'Cuellos' },
+  { palabras: ['capa'],              cat: 'Capas' },
+  { palabras: ['bolso', 'bolsa'],    cat: 'Bolsos' },
+  { palabras: ['sombrero', 'gorro'], cat: 'Sombreros y gorros' },
+  { palabras: ['llavero'],           cat: 'Llaveros' },
 ];
 
 function sleep(ms) {
@@ -48,11 +44,14 @@ function sleep(ms) {
 // ── HTTP GET básico ──────────────────────────────────────────────────────────
 function fetchText(url) {
   return new Promise((resolve) => {
-    const req = https.get(url, { timeout: TIMEOUT_MS,
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; StockSync/1.0; +https://estolasparaeventos.com)',
-                 'Accept': 'text/html,application/xml,*/*', 'Accept-Language': 'es-ES,es;q=0.9' }
+    const req = https.get(url, {
+      timeout: TIMEOUT_MS,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; StockSync/1.0; +https://estolasparaeventos.com)',
+        'Accept': 'text/html,*/*',
+        'Accept-Language': 'es-ES,es;q=0.9',
+      }
     }, (res) => {
-      // Seguir una sola redirección
       if ((res.statusCode === 301 || res.statusCode === 302) && res.headers.location) {
         fetchText(res.headers.location).then(resolve);
         return;
@@ -67,51 +66,47 @@ function fetchText(url) {
   });
 }
 
-// ── Sitemap: extraer URLs de /producto/ ─────────────────────────────────────
-async function getProductUrlsFromSitemap() {
-  for (const url of SITEMAP_URLS) {
-    process.stdout.write(`  Probando sitemap: ${url} … `);
-    const xml = await fetchText(url);
-    if (!xml) { console.log('no disponible'); continue; }
+// ── Extraer URLs de productos de una página de categoría ────────────────────
+function extractUrlsDePagina(html) {
+  return [...new Set(
+    [...html.matchAll(/href="(https:\/\/www\.delaroca\.es\/producto\/[^"]+)"/g)]
+      .map(m => m[1].replace(/\/$/, '') + '/')
+  )];
+}
 
-    // Sitemap index: busca el sub-sitemap de productos
-    if (xml.includes('<sitemapindex')) {
-      const subMatch = xml.match(/<loc>([^<]*product[^<]*)<\/loc>/i);
-      if (subMatch) {
-        console.log(`index → ${subMatch[1]}`);
-        const subXml = await fetchText(subMatch[1]);
-        if (subXml) {
-          const urls = [...subXml.matchAll(/<loc>(https:\/\/www\.delaroca\.es\/producto\/[^<]+)<\/loc>/gi)]
-            .map(m => m[1].trim());
-          if (urls.length > 0) { console.log(`  ${urls.length} URLs de productos`); return urls; }
-        }
-      }
-    }
+// ── Recorrer todas las páginas de la categoría Accesorios ───────────────────
+async function getProductUrlsFromCategory() {
+  const urls = [];
+  for (let page = 1; page <= 50; page++) {
+    const pageUrl = page === 1
+      ? CAT_ACCESORIOS
+      : `${CAT_ACCESORIOS}page/${page}/`;
 
-    // Sitemap directo de productos
-    const urls = [...xml.matchAll(/<loc>(https:\/\/www\.delaroca\.es\/producto\/[^<]+)<\/loc>/gi)]
-      .map(m => m[1].trim());
-    if (urls.length > 0) { console.log(`${urls.length} productos`); return urls; }
-    console.log('sin productos');
+    process.stdout.write(`  Página ${page}: ${pageUrl} … `);
+    const html = await fetchText(pageUrl);
+    if (!html) { console.log('sin respuesta, fin.'); break; }
+
+    const found = extractUrlsDePagina(html);
+    if (found.length === 0) { console.log('vacía, fin.'); break; }
+
+    console.log(`${found.length} productos`);
+    urls.push(...found);
+    await sleep(500);
   }
-  return [];
+  return [...new Set(urls)];
 }
 
 // ── Extraer precio limpio del HTML WooCommerce (delaroca.es) ─────────────────
-// Formato real en la página: <bdi>1.500,00<span ...>&euro;</span></bdi>
-// Dentro de <del> = precio original, dentro de <ins> = precio oferta
 function extractPrecio(html) {
   const block = html.match(/class="price"[\s\S]{0,1000}?<\/p>/);
   if (!block) return { precio: null, antes: null };
   const seg = block[0];
 
-  // Extrae todos los importes que aparecen en <bdi>
   const precios = [...seg.matchAll(/<bdi>([\d.,]+)<span[^>]*>(?:&euro;|€|&#8364;)<\/span><\/bdi>/gi)]
     .map(m => m[1] + '€');
 
   if (precios.length === 0) return { precio: null, antes: null };
 
-  // Si hay <del> Y <ins> es oferta: primero = original, segundo = precio actual
   const esOferta = seg.includes('<del') && seg.includes('<ins');
   if (esOferta && precios.length >= 2) return { precio: precios[1], antes: precios[0] };
   return { precio: precios[0], antes: null };
@@ -128,33 +123,26 @@ function extractOgImage(html) {
 function extractOgTitle(html) {
   let m = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
   if (!m) m = html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i);
-  if (m) return m[1].replace(/\s*[-–|].*$/, '').trim(); // quitar "– De La Roca" del final
+  if (m) return m[1].replace(/\s*[-–|].*$/, '').trim();
   return null;
 }
 
-// Prendas de ropa completas que no son accesorios — aunque tengan "cuello" en el nombre
-const PRENDAS_EXCLUIR = ['chaqueta', 'abrigo', 'chaleco', 'cazadora', 'chaqueton', 'chaquetón', 'abrigos', 'chaquetas'];
-
-// ── Detectar categoría desde migas de pan ────────────────────────────────────
-function detectarCategoria(html, url) {
+// ── Detectar subcategoría desde los links del breadcrumb ─────────────────────
+// Solo lee los <a> del breadcrumb (= categorías), nunca el nombre del producto
+// (que aparece como texto plano al final del breadcrumb, sin enlace).
+function detectarCategoria(html) {
   const bc = html.match(/woocommerce-breadcrumb[^>]*>([\s\S]{0,500}?)<\/nav>/i)
           || html.match(/breadcrumb[^>]*>([\s\S]{0,500}?)<\/[uo]l>/i);
 
   if (!bc) return null;
 
-  // Buscar solo el texto de los LINKS del breadcrumb (= categorías).
-  // El nombre del producto aparece al final como texto plano sin <a>, así que queda excluido.
   const links = [...bc[1].matchAll(/<a[^>]*>([^<]+)<\/a>/gi)].map(m => m[1].toLowerCase());
-  const textoCats = links.join(' ');
-
-  // Si la URL o los links del breadcrumb contienen una prenda completa, descartar
-  const urlLower = url.toLowerCase();
-  if (PRENDAS_EXCLUIR.some(p => urlLower.includes(p) || textoCats.includes(p))) return null;
+  const texto = links.join(' ');
 
   for (const { palabras, cat } of CAT_MAP) {
-    if (palabras.some(p => textoCats.includes(p))) return cat;
+    if (palabras.some(p => texto.includes(p))) return cat;
   }
-  return null; // categoría no mapeada: no añadir
+  return null; // subcategoría no reconocida: no añadir
 }
 
 // ── Leer / escribir index.html ───────────────────────────────────────────────
@@ -191,20 +179,20 @@ async function main() {
   const urlsActuales = new Set(productos.map(p => p.url.replace(/\/$/, '')));
   console.log(`Catálogo actual: ${urlsActuales.size} productos\n`);
 
-  // 1. Obtener URLs del sitemap
-  console.log('Obteniendo URLs desde el sitemap de delaroca.es...');
-  const urlsSitemap = await getProductUrlsFromSitemap();
+  // 1. Obtener URLs de la categoría Accesorios
+  console.log('Obteniendo productos de /categoria-producto/accesorios/ en delaroca.es...');
+  const urlsCategoria = await getProductUrlsFromCategory();
 
-  if (urlsSitemap.length === 0) {
-    console.log('\nNo se pudo acceder al sitemap. Prueba a ejecutar el script más tarde.');
+  if (urlsCategoria.length === 0) {
+    console.log('\nNo se pudo acceder a la categoría. Prueba más tarde.');
     process.exit(0);
   }
 
   // 2. Detectar URLs nuevas
-  const urlsNuevas = urlsSitemap.filter(u => !urlsActuales.has(u.replace(/\/$/, '')));
-  console.log(`\nProductos en sitemap:  ${urlsSitemap.length}`);
-  console.log(`Ya en catálogo:        ${urlsActuales.size}`);
-  console.log(`Productos nuevos:      ${urlsNuevas.length}`);
+  const urlsNuevas = urlsCategoria.filter(u => !urlsActuales.has(u.replace(/\/$/, '')));
+  console.log(`\nProductos en Accesorios: ${urlsCategoria.length}`);
+  console.log(`Ya en catálogo:          ${urlsActuales.size}`);
+  console.log(`Productos nuevos:        ${urlsNuevas.length}`);
 
   if (urlsNuevas.length === 0) {
     console.log('\nEl catálogo está al día. No hay productos nuevos.');
@@ -213,9 +201,9 @@ async function main() {
 
   // 3. Extraer datos de cada producto nuevo
   console.log('\nExtrayendo datos de productos nuevos...\n');
-  const productosNuevos  = [];
-  const imagenesNuevas   = {};
-  const fallidos         = [];
+  const productosNuevos = [];
+  const imagenesNuevas  = {};
+  const fallidos        = [];
 
   for (let i = 0; i < urlsNuevas.length; i++) {
     const url = urlsNuevas[i];
@@ -232,7 +220,7 @@ async function main() {
     const nombre    = extractOgTitle(html);
     const imagen    = extractOgImage(html);
     const { precio, antes } = extractPrecio(html);
-    const categoria = detectarCategoria(html, url);
+    const categoria = detectarCategoria(html);
 
     if (!nombre || !precio || !categoria) {
       console.log(`✗ datos incompletos (nombre:${!!nombre} precio:${!!precio} cat:${!!categoria})`);
@@ -252,7 +240,7 @@ async function main() {
 
   // 4. Resumen
   console.log(`\n${'─'.repeat(70)}`);
-  console.log(`Añadir:  ${productosNuevos.length} productos`);
+  console.log(`Añadir:   ${productosNuevos.length} productos`);
   console.log(`Fallidos: ${fallidos.length}`);
   if (fallidos.length > 0) console.log('  ' + fallidos.join('\n  '));
 
@@ -270,7 +258,6 @@ async function main() {
   }
 
   // 5. Actualizar index.html
-  // Los nuevos se insertan al inicio del array (más recientes primero)
   const productosActualizados = [...productosNuevos, ...productos];
   const imagenesActualizadas  = { ...imagenesNuevas, ...imagenes };
 
@@ -295,7 +282,6 @@ async function main() {
   fs.writeFileSync(INDEX_FILE, htmlActualizado, 'utf8');
   console.log(`\n✓ index.html actualizado: ${productosNuevos.length} productos añadidos.`);
 
-  // Log
   const logPath = path.join(__dirname, 'stock-added.log');
   const entry = `\n[${new Date().toISOString()}]\n` +
     productosNuevos.map(p => `  + [${p.cat}] ${p.nombre} | ${p.precio} | ${p.url}`).join('\n') + '\n';
