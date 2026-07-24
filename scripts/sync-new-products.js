@@ -127,16 +127,15 @@ function extractOgTitle(html) {
   return null;
 }
 
-// ── Detectar subcategoría desde los links del breadcrumb ─────────────────────
-// Solo lee los <a> del breadcrumb (= categorías), nunca el nombre del producto
-// (que aparece como texto plano al final del breadcrumb, sin enlace).
+// ── Detectar subcategoría desde el bloque "Categorías" del producto ─────────
+// delaroca.es ya no expone el breadcrumb visible (woocommerce-breadcrumb),
+// pero el span class="posted_in" del product_meta sigue listando las
+// categorías reales del producto como enlaces (Accesorios, Bufandas, etc.).
 function detectarCategoria(html) {
-  const bc = html.match(/woocommerce-breadcrumb[^>]*>([\s\S]{0,500}?)<\/nav>/i)
-          || html.match(/breadcrumb[^>]*>([\s\S]{0,500}?)<\/[uo]l>/i);
+  const bloque = html.match(/class="posted_in">([\s\S]{0,600}?)<\/span>/i);
+  if (!bloque) return null;
 
-  if (!bc) return null;
-
-  const links = [...bc[1].matchAll(/<a[^>]*>([^<]+)<\/a>/gi)].map(m => m[1].toLowerCase());
+  const links = [...bloque[1].matchAll(/<a[^>]*>([^<]+)<\/a>/gi)].map(m => m[1].toLowerCase());
   const texto = links.join(' ');
 
   for (const { palabras, cat } of CAT_MAP) {
