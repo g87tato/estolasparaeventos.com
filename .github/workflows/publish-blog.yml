@@ -1,0 +1,37 @@
+name: Publicar artículos del blog
+
+on:
+  schedule:
+    # Todos los días a las 7:00 AM (hora España en verano = UTC+2)
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+jobs:
+  publish-blog:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generar páginas de blog y sitemap
+        run: node scripts/generate-blog.js
+
+      - name: Commit y push si hay artículos nuevos publicados
+        run: |
+          git config user.name "Blog Bot – Estolas para Eventos"
+          git config user.email "bot@estolasparaeventos.com"
+          git add blog/ sitemap.xml
+          if git diff --staged --quiet; then
+            echo "Sin artículos nuevos que publicar hoy."
+          else
+            git commit -m "Blog: publicar artículo(s) programado(s) $(date +'%Y-%m-%d')"
+            git push
+          fi

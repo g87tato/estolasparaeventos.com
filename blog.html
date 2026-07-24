@@ -67,20 +67,6 @@ header{position:sticky;top:0;z-index:50;background:rgba(244,236,225,.94);backdro
 .post-leer{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--oro);font-weight:500;border-bottom:1px solid transparent;transition:border-color .3s;}
 .post-card:hover .post-leer{border-color:var(--oro);}
 
-/* Vista de post individual */
-#post-view{display:none;}
-.post-back{display:inline-flex;align-items:center;gap:.5rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gris);border:1px solid var(--arena);padding:.55rem 1.2rem;margin-bottom:2.5rem;transition:all .3s;cursor:pointer;}
-.post-back:hover{border-color:var(--oro);color:var(--oro);}
-.post-single{max-width:760px;margin:0 auto;padding:3.5rem 0 6rem;}
-.post-single .post-cat{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--oro);margin-bottom:.8rem;}
-.post-single h1{font-family:var(--display);font-size:clamp(1.9rem,4vw,3rem);font-weight:500;line-height:1.15;color:var(--marron);margin-bottom:1rem;}
-.post-single .post-fecha{font-size:.78rem;color:var(--arena);letter-spacing:.1em;padding-bottom:1.8rem;border-bottom:1px solid var(--crema-osc);margin-bottom:2rem;display:block;}
-.post-contenido p{font-size:1rem;color:#3a2e22;line-height:1.8;margin-bottom:1.4rem;}
-.post-contenido h2{font-family:var(--display);font-size:1.6rem;font-weight:600;color:var(--marron);margin:2.2rem 0 .9rem;}
-.post-contenido h3{font-size:1.05rem;font-weight:500;color:var(--negro);margin:1.5rem 0 .6rem;letter-spacing:.05em;}
-.post-contenido ul{padding-left:1.5rem;margin-bottom:1.2rem;}
-.post-contenido li{font-size:1rem;color:#3a2e22;line-height:1.8;margin-bottom:.4rem;}
-
 /* CTA */
 .blog-cta{background:var(--negro);color:var(--crema);text-align:center;padding:4rem 0;}
 .blog-cta h2{font-family:var(--display);font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:500;margin-bottom:1rem;}
@@ -170,20 +156,6 @@ btn.addEventListener('click',()=>{
   </section>
 </div>
 
-<!-- Post individual -->
-<div id="post-view">
-  <section class="contenedor post-single">
-    <button class="post-back" onclick="verLista()">← Volver al blog</button>
-    <p class="post-cat" id="sv-cat"></p>
-    <h1 id="sv-titulo"></h1>
-    <span class="post-fecha" id="sv-fecha"></span>
-    <div class="post-contenido" id="sv-contenido"></div>
-    <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--crema-osc);">
-      <button class="post-back" onclick="verLista()">← Volver al blog</button>
-    </div>
-  </section>
-</div>
-
 <section class="blog-cta">
   <div class="contenedor">
     <h2>Descubre nuestra colección</h2>
@@ -246,6 +218,11 @@ function renderFiltros(){
   });
 }
 
+function slugify(titulo){
+  return titulo.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+}
+
 function renderGrid(){
   const grid = document.getElementById('grid-posts');
   const hoy = new Date().toISOString().split('T')[0];
@@ -253,56 +230,29 @@ function renderGrid(){
   const lista = catActual === 'Todos' ? visibles : visibles.filter(p => p.categoria === catActual);
   if(!lista.length){ grid.innerHTML = '<p style="color:var(--gris);padding:2rem 0;">No hay artículos en esta categoría aún.</p>'; return; }
   grid.innerHTML = lista.map(p => `
-    <article class="post-card" onclick="verPost('${p.id}')">
-      <div class="post-card-img"><div class="icono">De La Roca</div></div>
-      <div class="post-card-body">
-        <div class="post-cat">${p.categoria}</div>
-        <h2 class="post-titulo">${p.titulo}</h2>
-        <p class="post-resumen">${p.resumen}</p>
-        <div class="post-meta">
-          <span class="post-fecha">${formatFecha(p.fecha)}</span>
-          <span class="post-leer">Leer artículo →</span>
+    <article class="post-card">
+      <a href="blog/${slugify(p.titulo)}.html" style="display:contents;">
+        <div class="post-card-img"><div class="icono">De La Roca</div></div>
+        <div class="post-card-body">
+          <div class="post-cat">${p.categoria}</div>
+          <h2 class="post-titulo">${p.titulo}</h2>
+          <p class="post-resumen">${p.resumen}</p>
+          <div class="post-meta">
+            <span class="post-fecha">${formatFecha(p.fecha)}</span>
+            <span class="post-leer">Leer artículo →</span>
+          </div>
         </div>
-      </div>
+      </a>
     </article>
   `).join('');
 }
-
-function verPost(id){
-  const p = posts.find(x => x.id === id);
-  if(!p) return;
-  document.getElementById('sv-cat').textContent = p.categoria;
-  document.getElementById('sv-titulo').textContent = p.titulo;
-  document.getElementById('sv-fecha').textContent = formatFecha(p.fecha);
-  document.getElementById('sv-contenido').innerHTML = p.contenido;
-  document.getElementById('blog-lista').style.display = 'none';
-  document.getElementById('post-view').style.display = 'block';
-  window.scrollTo({top: 0, behavior: 'smooth'});
-  history.pushState({postId: id}, '', '#' + id);
-  document.title = p.titulo + ' | Blog Estolas para Eventos';
-}
-
-function verLista(){
-  document.getElementById('blog-lista').style.display = 'block';
-  document.getElementById('post-view').style.display = 'none';
-  history.pushState({}, '', 'blog.html');
-  document.title = 'Blog de Moda y Eventos | Estolas para Eventos – De La Roca';
-  window.scrollTo({top: 0, behavior: 'smooth'});
-}
-
-window.addEventListener('popstate', e => {
-  if(e.state && e.state.postId) verPost(e.state.postId);
-  else verLista();
-});
 
 fetch('posts.json')
   .then(r => r.json())
   .then(data => {
     posts = data;
     renderFiltros();
-    const hash = location.hash.replace('#','');
-    if(hash && posts.find(p => p.id === hash)) verPost(hash);
-    else renderGrid();
+    renderGrid();
   })
   .catch(() => {
     document.getElementById('grid-posts').innerHTML = '<p style="color:var(--gris);">No se pudieron cargar los artículos. Inténtalo de nuevo.</p>';
