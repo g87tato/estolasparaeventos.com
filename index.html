@@ -3659,6 +3659,12 @@ function render(){
   const lista = filtroActual==="Todos" ? PRODUCTOS : PRODUCTOS.filter(p=>p.cat===filtroActual);
   grid.innerHTML = lista.map(tarjeta).join('');
   contador.textContent = lista.length+(lista.length===1?" pieza":" piezas")+(filtroActual==="Todos"?" en colecci\u00f3n":" en "+filtroActual.toLowerCase());
+  if(window.gtag){
+    gtag('event','view_item_list',{
+      item_list_name: filtroActual,
+      items: lista.slice(0,20).map(p=>({item_id:p.url,item_name:p.nombre,item_category:p.cat,price:parseFloat(p.precio.replace(/\./g,'').replace(',','.').replace(/[^\d.]/g,''))}))
+    });
+  }
 }
 
 ORDEN.forEach(cat=>{
@@ -3743,5 +3749,6 @@ function rechazarCookies(){
   document.getElementById('cookie-banner').style.display='none';
 }
 </script>
+<script src="/tracking-eventos.js" defer></script>
 </body>
 </html>

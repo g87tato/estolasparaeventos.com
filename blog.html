@@ -94,6 +94,15 @@ footer a:hover{color:var(--oro);}
 .menu-movil a:hover{color:var(--oro);}
 .menu-movil .separador-menu{width:40px;height:1px;background:var(--arena);}
 @media(max-width:760px){.nav-links{display:none;}.hamburguesa{display:flex;}}
+/* ── Cookie Banner ── */
+#cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:999;background:var(--negro);color:var(--crema);padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;box-shadow:0 -4px 24px rgba(0,0,0,.3);}
+#cookie-banner p{margin:0;font-size:.82rem;line-height:1.5;flex:1;min-width:240px;}
+#cookie-banner p a{color:var(--oro-claro);text-decoration:underline;}
+.cookie-btns{display:flex;gap:.7rem;flex-shrink:0;}
+.cookie-btn-aceptar{background:var(--oro);color:var(--blanco);border:none;padding:.65rem 1.6rem;font-family:var(--texto);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;font-weight:500;transition:background .3s;}
+.cookie-btn-aceptar:hover{background:var(--marron-claro);}
+.cookie-btn-rechazar{background:transparent;color:var(--crema);border:1px solid rgba(244,236,225,.35);padding:.65rem 1.2rem;font-family:var(--texto);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:border-color .3s;}
+.cookie-btn-rechazar:hover{border-color:var(--arena);}
 </style>
 </head>
 <body>
@@ -178,19 +187,45 @@ btn.addEventListener('click',()=>{
   </div>
 </footer>
 
+<!-- Cookie Banner -->
+<div id="cookie-banner" style="display:none" role="dialog" aria-label="Aviso de cookies">
+  <p>Usamos cookies propias y de an&aacute;lisis para mejorar tu experiencia. Al hacer clic en &laquo;Aceptar&raquo; consientes el uso de cookies de Google Analytics. <a href="politica-privacidad.html">Pol&iacute;tica de cookies</a>.</p>
+  <div class="cookie-btns">
+    <button class="cookie-btn-aceptar" onclick="aceptarCookies()">Aceptar todas</button>
+    <button class="cookie-btn-rechazar" onclick="rechazarCookies()">Solo necesarias</button>
+  </div>
+</div>
+
 <script>
 document.getElementById('anio').textContent = new Date().getFullYear();
+const GA_ID = 'G-XB4NMN86N0';
+function cargarGA(){
+  if(window.__ga_loaded) return;
+  window.__ga_loaded = true;
+  const s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  window.gtag = gtag;
+  gtag('js', new Date());
+  gtag('config', GA_ID);
+}
 (function(){
-  const GA_ID = 'G-XB4NMN86N0';
-  if(localStorage.getItem('cookies_consent')==='aceptadas'){
-    const s=document.createElement('script');s.async=true;
-    s.src='https://www.googletagmanager.com/gtag/js?id='+GA_ID;
-    document.head.appendChild(s);
-    window.dataLayer=window.dataLayer||[];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js',new Date());gtag('config',GA_ID);
-  }
+  const v = localStorage.getItem('cookies_consent');
+  if(!v) document.getElementById('cookie-banner').style.display='flex';
+  else if(v==='aceptadas') cargarGA();
 })();
+function aceptarCookies(){
+  localStorage.setItem('cookies_consent','aceptadas');
+  document.getElementById('cookie-banner').style.display='none';
+  cargarGA();
+}
+function rechazarCookies(){
+  localStorage.setItem('cookies_consent','basicas');
+  document.getElementById('cookie-banner').style.display='none';
+}
 
 const CATEGORIAS = ['Todos','Moda','Eventos','Consejos','Tendencias','Historia'];
 let catActual = 'Todos';
@@ -258,5 +293,6 @@ fetch('posts.json')
     document.getElementById('grid-posts').innerHTML = '<p style="color:var(--gris);">No se pudieron cargar los artículos. Inténtalo de nuevo.</p>';
   });
 </script>
+<script src="/tracking-eventos.js" defer></script>
 </body>
 </html>
