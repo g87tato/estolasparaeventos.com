@@ -23,6 +23,11 @@ const SITEMAP    = path.join(ROOT, 'sitemap.xml');
 const SITE_URL   = 'https://estolasparaeventos.com';
 const OG_IMAGE   = 'https://www.delaroca.es/wp-content/uploads/2025/10/250066-1.jpg';
 
+// Slugs de las páginas de colección (/colecciones/*.html) generadas por
+// generate-category-pages.js, para no perderlas del sitemap cada vez que
+// este script lo reescribe. Fuente única: ese script exporta la lista.
+const COLECCIONES = require('./generate-category-pages.js').PAGINAS.map(p => p.slug);
+
 function slugify(titulo) {
   return titulo
     .toLowerCase()
@@ -222,6 +227,7 @@ footer a:hover{color:var(--oro);}
   <div class="contenedor">
     <div class="footer-grid">
       <div><h5>Estolas para Eventos</h5><p>Blog y catálogo de alta peletería de la marca De La Roca. Artículos sobre moda, eventos y peletería artesanal sostenible.</p></div>
+      <div><h5>Colecciones</h5><p><a href="../colecciones/estolas-de-pelo-para-boda.html">Estolas para boda</a></p><p><a href="../colecciones/capas-de-pelo-para-boda.html">Capas para boda</a></p><p><a href="../colecciones/cuellos-de-pelo-natural.html">Cuellos de pelo natural</a></p><p><a href="../colecciones/bufandas-y-chales-de-fiesta.html">Bufandas y chales de fiesta</a></p></div>
       <div><h5>Navegar</h5><p><a href="../">Catálogo de productos</a></p><p><a href="../blog.html">Blog</a></p><p><a href="https://www.delaroca.es" target="_blank" rel="noopener">Tienda oficial De La Roca</a></p></div>
       <div><h5>De La Roca</h5><p>DE LA ROCA PELETEROS, S.L.</p><p>Calle Lope de Rueda, 20 (Local)</p><p>28009 Madrid, España</p><p><a href="https://www.delaroca.es/inicio#contacto" target="_blank" rel="noopener">Formulario de contacto</a></p></div>
     </div>
@@ -302,6 +308,16 @@ function generarSitemap(postsPublicados, slugPorId) {
       lastmod: p.fecha,
       changefreq: 'monthly',
       priority: '0.6',
+    })),
+    // Páginas de colección (/colecciones/*.html) generadas por
+    // generate-category-pages.js. Se listan aquí también porque este script
+    // reescribe sitemap.xml entero cada día; si no estuvieran, la próxima
+    // ejecución automática las borraría del sitemap sin querer.
+    ...COLECCIONES.map(c => ({
+      loc: `${SITE_URL}/colecciones/${c}.html`,
+      lastmod: ultimaFechaContenido,
+      changefreq: 'monthly',
+      priority: '0.7',
     })),
     { loc: `${SITE_URL}/aviso-legal.html`, lastmod: '2026-05-22', changefreq: 'yearly', priority: '0.2' },
     { loc: `${SITE_URL}/politica-privacidad.html`, lastmod: '2026-05-22', changefreq: 'yearly', priority: '0.2' },
