@@ -286,10 +286,17 @@ btn.addEventListener('click',()=>{
 }
 
 function generarSitemap(postsPublicados, slugPorId) {
-  const hoy = new Date().toISOString().split('T')[0];
+  // Por qué: usar la fecha de generación (hoy) como lastmod hacía que el
+  // sitemap cambiase cada día aunque no hubiera artículos nuevos, generando
+  // un commit diario con el mensaje "publicar artículo(s) programado(s)"
+  // que no publicaba nada real. El lastmod ahora refleja el último cambio
+  // de contenido de verdad: la fecha del artículo publicado más reciente.
+  const ultimaFechaContenido = postsPublicados.length
+    ? postsPublicados.map(p => p.fecha).sort().pop()
+    : new Date().toISOString().split('T')[0];
   const urls = [
-    { loc: `${SITE_URL}/`, lastmod: hoy, changefreq: 'weekly', priority: '1.0' },
-    { loc: `${SITE_URL}/blog.html`, lastmod: hoy, changefreq: 'weekly', priority: '0.8' },
+    { loc: `${SITE_URL}/`, lastmod: ultimaFechaContenido, changefreq: 'weekly', priority: '1.0' },
+    { loc: `${SITE_URL}/blog.html`, lastmod: ultimaFechaContenido, changefreq: 'weekly', priority: '0.8' },
     ...postsPublicados.map(p => ({
       loc: `${SITE_URL}/blog/${slugPorId.get(p.id)}.html`,
       lastmod: p.fecha,

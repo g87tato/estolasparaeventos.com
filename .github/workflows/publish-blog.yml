@@ -35,3 +35,16 @@ jobs:
             git commit -m "Blog: publicar artículo(s) programado(s) $(date +'%Y-%m-%d')"
             git push
           fi
+
+      - name: Comprobar cola de artículos pendientes
+        run: |
+          RESTANTES=$(node -e "
+            const posts = require('./posts.json');
+            const hoy = new Date().toISOString().split('T')[0];
+            console.log(posts.filter(p => p.fecha > hoy).length);
+          ")
+          echo "Artículos programados pendientes (fecha futura): $RESTANTES"
+          if [ "$RESTANTES" -lt 5 ]; then
+            echo "::error::Quedan solo $RESTANTES artículo(s) programado(s) en posts.json. Añade más entradas o el blog dejará de publicar contenido nuevo sin que se note (el workflow seguirá en verde)."
+            exit 1
+          fi
