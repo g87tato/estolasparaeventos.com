@@ -2,15 +2,21 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://estolasparaeventos.com/</loc>
-    <lastmod>2026-09-21</lastmod>
+    <lastmod>2026-09-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://estolasparaeventos.com/blog.html</loc>
-    <lastmod>2026-09-21</lastmod>
+    <lastmod>2026-09-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://estolasparaeventos.com/blog/chal-estola-o-capa-para-un-vestido-de-fiesta-como-elegir-segun-el-escote-y-el-tejido.html</loc>
+    <lastmod>2026-09-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://estolasparaeventos.com/blog/boda-de-dia-o-boda-de-noche-como-elegir-tu-estola-segun-el-horario-de-la-ceremonia.html</loc>
@@ -302,25 +308,25 @@
   </url>
   <url>
     <loc>https://estolasparaeventos.com/colecciones/estolas-de-pelo-para-boda.html</loc>
-    <lastmod>2026-09-21</lastmod>
+    <lastmod>2026-09-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://estolasparaeventos.com/colecciones/capas-de-pelo-para-boda.html</loc>
-    <lastmod>2026-09-21</lastmod>
+    <lastmod>2026-09-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://estolasparaeventos.com/colecciones/cuellos-de-pelo-natural.html</loc>
-    <lastmod>2026-09-21</lastmod>
+    <lastmod>2026-09-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://estolasparaeventos.com/colecciones/bufandas-y-chales-de-fiesta.html</loc>
-    <lastmod>2026-09-21</lastmod>
+    <lastmod>2026-09-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
